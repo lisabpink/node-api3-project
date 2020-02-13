@@ -1,7 +1,7 @@
 const express = require("express");
 
 const db = require("../users/userDb.js");
-const postDb = require("../posts/postRouter");
+const postDb = require("../posts/postDb.js");
 
 const router = express.Router();
 
@@ -28,7 +28,22 @@ router.post("/", (req, res) => {
 });
 
 router.post("/:id/posts", (req, res) => {
-  // do your magic!
+  //! Add new post
+  const newBody = req.body;
+  
+  const user_id = req.params.id;
+  const newPost = {text: newBody.text, user_id}
+  postDb.insert(newPost)
+  .then(brandNewPost => {
+    res.status(200).json({ newPost })
+    
+  })
+  .catch(err => {
+    console.log(err);
+    res.status(500).json({
+      errorMessage: "There was an error while saving the post to the database"
+    });
+  });
 });
 
 router.get("/", (req, res) => {
@@ -68,7 +83,7 @@ router.get("/:id", (req, res) => {
 });
 
 router.get("/:id/posts", (req, res) => {
-  // do your magic!
+  //! Get users posts
   const postId = req.params.id;
 
   db
